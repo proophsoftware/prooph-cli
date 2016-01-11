@@ -9,9 +9,17 @@
 
 namespace Prooph\Cli\Code\Generator;
 
+use Zend\Code\Generator\DocBlockGenerator;
+
 /**
- *
+ * Generator for aggregates
  */
-class Aggregate
+class Aggregate extends AbstractGenerator
 {
+    /**
+     * @interitdoc
+     */
+    protected function getClassDocBlock($name) {
+        return new DocBlockGenerator('Aggregate ' . $name);
+    }
 }

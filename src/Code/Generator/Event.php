@@ -9,9 +9,7 @@
 
 namespace Prooph\Cli\Code\Generator;
 
-use Zend\Code\Generator\FileGenerator;
 use Zend\Code\Generator\DocBlockGenerator;
-use Zend\Code\Generator\ClassGenerator;
 
 /**
  * Generator class for Events
@@ -19,41 +17,9 @@ use Zend\Code\Generator\ClassGenerator;
 final class Event extends AbstractGenerator
 {
     /**
-     * @inheritdoc
+     * @interitdoc
      */
-    public function __invoke($name, $namespace, $classToExtend, $fileDocBlock = null)
-    {
-        $methods = [];
-        $uses = [];
-        $interfaces = [];
-        $properties = [];
-        $docBlock = '';
-        $flags = null;
-
-        if ($fileDocBlock) {
-            $docBlock = new DocBlockGenerator($docBlock);
-        }
-
-        if ($classToExtend) {
-            $uses = [$classToExtend];
-        }
-
-        $class = new ClassGenerator(
-            $name,
-            $namespace,
-            $flags,
-            $classToExtend,
-            $interfaces,
-            $properties,
-            $methods,
-            new DocBlockGenerator('Event ' . $name)
-        );
-
-        return new FileGenerator([
-            'classes' => [$class],
-            'namespace' => $namespace,
-            'uses' => $uses,
-            'docBlock' => $docBlock
-        ]);
+    protected function getClassDocBlock($name) {
+        return new DocBlockGenerator('Event ' . $name);
     }
 }

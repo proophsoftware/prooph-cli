@@ -9,15 +9,12 @@
 
 namespace Prooph\Cli\Console\Command;
 
-use Prooph\Cli\Console\Helper\ClassInfo;
-use Prooph\Cli\Exception\RuntimeException;
-use Symfony\Component\Console\Command\Command;
+use Prooph\Cli\Code\Generator\AbstractGenerator;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Prooph\Cli\Code\Generator\Event as EventGenerator;
+use Symfony\Component\Console\Input\InputOption;
 
-class GenerateEvent extends Command
+class GenerateEvent extends AbstractCommand
 {
     /**
      * @var EventGenerator
@@ -33,6 +30,14 @@ class GenerateEvent extends Command
         $this->generator = $generator;
 
         parent::__construct();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getGenerator()
+    {
+        return $this->generator;
     }
 
     /**
@@ -63,37 +68,16 @@ class GenerateEvent extends Command
             ->addOption(
                 'force',
                 'f',
-                InputArgument::OPTIONAL,
+                InputOption::VALUE_NONE,
                 'Overwrite file if exists, optional'
+            )
+            ->addOption(
+                'not-final',
+                null,
+                InputOption::VALUE_NONE,
+                'Mark class as NOT final, optional'
             )
         ;
     }
 
-    /**
-     * @interitdoc
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $name = $input->getArgument('name');
-        $path = $input->getArgument('path');
-        $classToExtend = $input->getArgument('class-to-extend');
-
-        /* @var $classInfo ClassInfo */
-        $classInfo = $this->getHelper(ClassInfo::class);
-
-        $filename = $classInfo->getFilename($path, $name);
-
-        if (file_exists($filename) && !$input->getOption('force')) {
-            throw new RuntimeException(
-                sprintf('File "%s" already exists, use --force option to overwrite this file.', $filename)
-            );
-        }
-
-        $fileGenerator = $this->generator->__invoke(
-            $name, $classInfo->getClassNamespace($path, $name), $classToExtend, $classInfo->getFileDocBlock()
-        );
-
-        $this->generator->writeClass($filename, $fileGenerator);
-        $output->writeln('Generated file ' . $filename);
-    }
 }

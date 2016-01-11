@@ -9,13 +9,11 @@
 
 namespace Prooph\Cli\Console\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Prooph\Cli\Code\Generator\Aggregate as AggregateGenerator;
+use Symfony\Component\Console\Input\InputOption;
 
-class GenerateAggregate extends Command
+class GenerateAggregate extends AbstractCommand
 {
     /**
      * @var AggregateGenerator
@@ -33,6 +31,14 @@ class GenerateAggregate extends Command
         parent::__construct();
     }
 
+    /**
+     * @inheritDoc
+     */
+    protected function getGenerator()
+    {
+        return $this->generator;
+    }
+
     protected function configure()
     {
         $this
@@ -43,10 +49,30 @@ class GenerateAggregate extends Command
                 InputArgument::REQUIRED,
                 'What is the name of the aggregate class?'
             )
+            ->addArgument(
+                'path',
+                InputArgument::OPTIONAL,
+                'Path to store the file',
+                'Aggregate'
+            )
+            ->addArgument(
+                'class-to-extend',
+                InputArgument::OPTIONAL,
+                'FCQN of the base class , optional',
+                '\Prooph\EventSourcing\AggregateRoot'
+            )
+            ->addOption(
+                'force',
+                'f',
+                InputOption::VALUE_NONE,
+                'Overwrite file if exists, optional'
+            )
+            ->addOption(
+                'not-final',
+                null,
+                InputOption::VALUE_NONE,
+                'Mark class as NOT final, optional'
+            )
         ;
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
     }
 }
