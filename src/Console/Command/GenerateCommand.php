@@ -34,12 +34,18 @@ class GenerateCommand extends Command
      */
     private $commandHandlerFactoryGenerator;
 
+    /**
+     * GenerateCommand constructor.
+     * @param CommandGenerator $generator
+     * @param CommandHandlerGenerator $handlerGenerator
+     * @param CommandHandlerFactoryGenerator $factoryGenerator
+     */
     public function __construct(
-        CommandGenerator $commandGenerator,
+        CommandGenerator $generator,
         CommandHandlerGenerator $handlerGenerator,
         CommandHandlerFactoryGenerator $factoryGenerator)
     {
-        $this->commandGenerator = $commandGenerator;
+        $this->commandGenerator = $generator;
         $this->commandHandlerGenerator = $handlerGenerator;
         $this->commandHandlerFactoryGenerator = $factoryGenerator;
 

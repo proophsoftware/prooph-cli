@@ -1,7 +1,23 @@
-# Prooph Command Line Interface
+# prooph Command Line Interface
 
 ## Overview
+The prooph command line interfaces generates classes to increase development speed. For available commands run
 
+```bash
+$ php bin/prooph-cli list
+```
+
+Here is an example output:
+```shell
+Available commands:
+  help              Displays help for a command
+  list              Lists commands
+ prooph
+  prooph:aggregate  Generates an aggregate class
+  prooph:all        Generates an aggregate, command, command handler, command handler factory and event class.
+  prooph:command    Generates a command, command handler and command handler factory class
+  prooph:event      Generates an event class
+```
 
 ## Installation
 

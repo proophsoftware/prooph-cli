@@ -11,10 +11,16 @@ namespace Prooph\Cli\Console\Helper;
 
 use Symfony\Component\Console\Helper\HelperInterface;
 
+/**
+ * Interface ClassInfo
+ *
+ * You can write your own info class e.g. for PSR-0 or with a predefined package prefix, source folder and file doc
+ * block
+ */
 interface ClassInfo extends HelperInterface
 {
     /**
-     * PSR-0 or PSR-4 namespace prefix
+     * PSR-4 namespace prefix
      *
      * @return string
      */
@@ -28,9 +34,25 @@ interface ClassInfo extends HelperInterface
     public function getSourceFolder();
 
     /**
-     * PHPDoc file DocBlock
+     * Class namespace is determined by package prefix, source folder and given path.
+     *
+     * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md#3-examples
+     *
+     * @param string $path
+     * @param string $name
+     * @return string
+     */
+    public function getClassNamespace($path, $name);
+
+    /**
+     * @inheritDoc
+     */
+    public function getFilename($path, $name);
+
+    /**
+     * PHPDoc file doc block for copyright, license ...
      *
      * @return string
      */
-    public function getFileHeader();
+    public function getFileDocBlock();
 }

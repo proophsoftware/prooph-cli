@@ -9,13 +9,35 @@
 
 namespace Prooph\Cli\Console\Command;
 
+use Prooph\Cli\Console\Helper\ClassInfo;
+use Prooph\Cli\Exception\RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Prooph\Cli\Code\Generator\Event as EventGenerator;
 
 class GenerateEvent extends Command
 {
+    /**
+     * @var EventGenerator
+     */
+    private $generator;
+
+    /**
+     * GenerateEvent constructor.
+     * @param EventGenerator $generator
+     */
+    public function __construct(EventGenerator $generator)
+    {
+        $this->generator = $generator;
+
+        parent::__construct();
+    }
+
+    /**
+     * @interitdoc
+     */
     protected function configure()
     {
         $this
@@ -26,10 +48,52 @@ class GenerateEvent extends Command
                 InputArgument::REQUIRED,
                 'What is the name of the event?'
             )
+            ->addArgument(
+                'path',
+                InputArgument::OPTIONAL,
+                'Path to store the file',
+                'Event'
+            )
+            ->addArgument(
+                'class-to-extend',
+                InputArgument::OPTIONAL,
+                'FCQN of the base class , optional',
+                '\Prooph\EventSourcing\AggregateChanged'
+            )
+            ->addOption(
+                'force',
+                'f',
+                InputArgument::OPTIONAL,
+                'Overwrite file if exists, optional'
+            )
         ;
     }
 
+    /**
+     * @interitdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $name = $input->getArgument('name');
+        $path = $input->getArgument('path');
+        $classToExtend = $input->getArgument('class-to-extend');
+
+        /* @var $classInfo ClassInfo */
+        $classInfo = $this->getHelper(ClassInfo::class);
+
+        $filename = $classInfo->getFilename($path, $name);
+
+        if (file_exists($filename) && !$input->getOption('force')) {
+            throw new RuntimeException(
+                sprintf('File "%s" already exists, use --force option to overwrite this file.', $filename)
+            );
+        }
+
+        $fileGenerator = $this->generator->__invoke(
+            $name, $classInfo->getClassNamespace($path, $name), $classToExtend, $classInfo->getFileDocBlock()
+        );
+
+        $this->generator->writeClass($filename, $fileGenerator);
+        $output->writeln('Generated file ' . $filename);
     }
 }

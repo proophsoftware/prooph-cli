@@ -13,9 +13,26 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Prooph\Cli\Code\Generator\Aggregate as AggregateGenerator;
 
 class GenerateAggregate extends Command
 {
+    /**
+     * @var AggregateGenerator
+     */
+    private $generator;
+
+    /**
+     * GenerateEvent constructor.
+     * @param AggregateGenerator $generator
+     */
+    public function __construct(AggregateGenerator $generator)
+    {
+        $this->generator = $generator;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this

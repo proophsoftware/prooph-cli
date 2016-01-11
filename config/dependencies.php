@@ -12,11 +12,17 @@ return [
         'config' => require __DIR__ . '/config.php',
     ],
     'invokables' => [
-        \Prooph\Cli\Console\Command\GenerateAggregate::class => \Prooph\Cli\Console\Command\GenerateAggregate::class,
-        \Prooph\Cli\Console\Command\GenerateEvent::class => \Prooph\Cli\Console\Command\GenerateEvent::class,
+        \Prooph\Cli\Code\Generator\Aggregate::class => '\Prooph\Cli\Code\Generator\Aggregate',
+        \Prooph\Cli\Code\Generator\Command::class => '\Prooph\Cli\Code\Generator\Command',
+        \Prooph\Cli\Code\Generator\CommandHandler::class => '\Prooph\Cli\Code\Generator\CommandHandler',
+        \Prooph\Cli\Code\Generator\CommandHandlerFactory::class => '\Prooph\Cli\Code\Generator\CommandHandlerFactory',
+        \Prooph\Cli\Code\Generator\Event::class => '\Prooph\Cli\Code\Generator\Event',
+        \Prooph\Cli\Console\Command\GenerateAll::class => \Prooph\Cli\Console\Command\GenerateAll::class,
     ],
     'factories' => [
+        \Prooph\Cli\Console\Command\GenerateAggregate::class
+            => '\Prooph\Cli\Console\Container\GenerateAggregateFactory',
         \Prooph\Cli\Console\Command\GenerateCommand::class => '\Prooph\Cli\Console\Container\GenerateCommandFactory',
-        \Prooph\Cli\Console\Command\GenerateAll::class => '\Prooph\Cli\Console\Container\GenerateAllFactory',
+        \Prooph\Cli\Console\Command\GenerateEvent::class => '\Prooph\Cli\Console\Container\GenerateEventFactory',
     ],
 ];
