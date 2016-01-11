@@ -19,7 +19,8 @@ final class Event extends AbstractGenerator
     /**
      * @interitdoc
      */
-    protected function getClassDocBlock($name) {
+    protected function getClassDocBlock($name)
+    {
         return new DocBlockGenerator('Event ' . $name);
     }
 }

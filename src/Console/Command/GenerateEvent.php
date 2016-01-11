@@ -9,10 +9,11 @@
 
 namespace Prooph\Cli\Console\Command;
 
-use Prooph\Cli\Code\Generator\AbstractGenerator;
 use Symfony\Component\Console\Input\InputArgument;
 use Prooph\Cli\Code\Generator\Event as EventGenerator;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateEvent extends AbstractCommand
 {
@@ -33,11 +34,11 @@ class GenerateEvent extends AbstractCommand
     }
 
     /**
-     * @inheritDoc
+     * @interitdoc
      */
-    protected function getGenerator()
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-        return $this->generator;
+        $this->generateClass($input, $output, $this->generator);
     }
 
     /**
@@ -56,7 +57,7 @@ class GenerateEvent extends AbstractCommand
             ->addArgument(
                 'path',
                 InputArgument::OPTIONAL,
-                'Path to store the file',
+                'Path to store the file. Starts from configured source folder path.',
                 'Event'
             )
             ->addArgument(
@@ -79,5 +80,4 @@ class GenerateEvent extends AbstractCommand
             )
         ;
     }
-
 }

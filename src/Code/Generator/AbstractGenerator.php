@@ -21,23 +21,33 @@ abstract class AbstractGenerator implements Generator
      */
     public function __invoke($name, $namespace, $classToExtend, $fileDocBlock = null)
     {
-        $methods = $this->getMethods();
-        $uses = $this->getUses();
         $interfaces = $this->getImplementedInterfaces();
         $properties = $this->getClassProperties();
-        $docBlock = '';
         $flags = $this->getClassFlags();
+        $methods = $this->getMethods($name);
+        $uses = $this->getUses();
 
-        if ($fileDocBlock) {
-            $docBlock = new DocBlockGenerator($docBlock);
-        }
+        $fileDocBlock = new DocBlockGenerator($fileDocBlock);
 
         if ($classToExtend) {
-            $uses[] = $classToExtend;
+            $uses[] = ltrim($classToExtend, '\\');
+            $classToExtend = substr($classToExtend, strrpos($classToExtend, '\\') + 1);
+        }
+
+        switch (get_class($this)) {
+            case 'Prooph\Cli\Code\Generator\CommandHandler':
+                $className = $name . 'Handler';
+                break;
+            case 'Prooph\Cli\Code\Generator\CommandHandlerFactory':
+                $className = $name . 'HandlerFactory';
+                break;
+            default:
+                $className = $name;
+                break;
         }
 
         $class = new ClassGenerator(
-            $name,
+            $className,
             $namespace,
             $flags,
             $classToExtend,
@@ -47,11 +57,15 @@ abstract class AbstractGenerator implements Generator
             $this->getClassDocBlock($name)
         );
 
+        foreach ($this->getTraits() as $trait) {
+            $class->addTrait($trait);
+        }
+
         return new FileGenerator([
             'classes' => [$class],
             'namespace' => $namespace,
             'uses' => $uses,
-            'docBlock' => $docBlock
+            'docBlock' => $fileDocBlock
         ]);
     }
 
@@ -83,9 +97,10 @@ abstract class AbstractGenerator implements Generator
     }
 
     /**
+     * @param string $name
      * @return array List of class methods
      */
-    protected function getMethods()
+    protected function getMethods($name)
     {
         return [];
     }
@@ -112,5 +127,13 @@ abstract class AbstractGenerator implements Generator
     protected function getClassFlags()
     {
         return [ClassGenerator::FLAG_FINAL];
+    }
+
+    /**
+     * @return null|array List of used Traits
+     */
+    protected function getTraits()
+    {
+        return [];
     }
 }

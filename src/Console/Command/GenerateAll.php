@@ -10,12 +10,17 @@
 namespace Prooph\Cli\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateAll extends Command
 {
+    /**
+     * @interitdoc
+     */
     protected function configure()
     {
         $this
@@ -37,11 +42,42 @@ class GenerateAll extends Command
                 'aggregate-name',
                 InputArgument::REQUIRED,
                 'What is the name of the aggregate class?'
+            )->addOption(
+                'force',
+                'f',
+                InputOption::VALUE_NONE,
+                'Overwrite file if exists, optional'
+            )
+            ->addOption(
+                'not-final',
+                null,
+                InputOption::VALUE_NONE,
+                'Mark class as NOT final, optional'
             )
         ;
     }
 
+    /**
+     * @interitdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $commands = [
+            'event' =>  $input->getArgument('event-name'),
+            'aggregate' => $input->getArgument('aggregate-name'),
+            'command' =>  $input->getArgument('command-name'),
+        ];
+
+        foreach ($commands as $commandName => $name) {
+            $command = $this->getApplication()->find('prooph:' . $commandName);
+
+            $arguments = [
+                'name'    => $name,
+                '--force' => $input->getOption('force'),
+                '--not-final' => $input->getOption('not-final'),
+            ];
+
+            $command->run(new ArrayInput($arguments), $output);
+        }
     }
 }

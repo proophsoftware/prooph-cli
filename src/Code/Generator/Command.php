@@ -9,9 +9,51 @@
 
 namespace Prooph\Cli\Code\Generator;
 
+use Zend\Code\Generator\DocBlockGenerator;
+
 /**
- *
+ * Generates a command
  */
-class Command
+class Command extends AbstractGenerator
 {
+    /**
+     * Namespace imports
+     *
+     * @var array
+     */
+    private $uses = [];
+
+    /**
+     * @inheritDoc
+     */
+    protected function getUses()
+    {
+        return $this->uses;
+    }
+
+    /**
+     * @interitdoc
+     */
+    protected function getClassDocBlock($name)
+    {
+        return new DocBlockGenerator('Command ' . $name);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getImplementedInterfaces()
+    {
+        $this->uses[] = 'Prooph\Common\Messaging\PayloadConstructable';
+        return ['PayloadConstructable'];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getTraits()
+    {
+        $this->uses[] = 'Prooph\Common\Messaging\PayloadTrait';
+        return ['PayloadTrait'];
+    }
 }

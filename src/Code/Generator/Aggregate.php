@@ -19,7 +19,8 @@ class Aggregate extends AbstractGenerator
     /**
      * @interitdoc
      */
-    protected function getClassDocBlock($name) {
+    protected function getClassDocBlock($name)
+    {
         return new DocBlockGenerator('Aggregate ' . $name);
     }
 }

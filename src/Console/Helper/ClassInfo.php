@@ -39,10 +39,9 @@ interface ClassInfo extends HelperInterface
      * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md#3-examples
      *
      * @param string $path
-     * @param string $name
      * @return string
      */
-    public function getClassNamespace($path, $name);
+    public function getClassNamespace($path);
 
     /**
      * @inheritDoc

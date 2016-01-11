@@ -9,9 +9,83 @@
 
 namespace Prooph\Cli\Code\Generator;
 
+use Zend\Code\Generator\DocBlock\Tag\ParamTag;
+use Zend\Code\Generator\DocBlock\Tag\ReturnTag;
+use Zend\Code\Generator\DocBlockGenerator;
+use Zend\Code\Generator\MethodGenerator;
+use Zend\Code\Generator\ParameterGenerator;
+
 /**
- *
+ * Generates the factory for a command handler
  */
-class CommandHandlerFactory
+class CommandHandlerFactory extends AbstractGenerator
 {
+    /**
+     * Namespace imports
+     *
+     * @var array
+     */
+    private $uses = [];
+
+    /**
+     * @interitdoc
+     */
+    protected function getClassDocBlock($name)
+    {
+        return new DocBlockGenerator('Factory for command handler ' . $name);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getUses()
+    {
+        return $this->uses;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getMethods($name)
+    {
+        return [
+            $this->getInvoke($name),
+        ];
+    }
+
+    /**
+     * Build __invoke method
+     *
+     * @param string $name
+     * @return MethodGenerator
+     */
+    private function getInvoke($name)
+    {
+        $name = ucfirst($name);
+
+        $parameters = [
+            new ParameterGenerator('container', 'ContainerInterface'),
+        ];
+        $this->uses[] = 'Interop\Container\ContainerInterface';
+
+        return new MethodGenerator(
+            '__invoke',
+            $parameters,
+            MethodGenerator::FLAG_PUBLIC,
+            sprintf('return new %sHandler();', $name),
+            new DocBlockGenerator(
+                'Creates command handler for command ' . $name,
+                null,
+                [
+                    new ParamTag(
+                        'container',
+                        [
+                            'ContainerInterface',
+                        ]
+                    ),
+                    new ReturnTag([$name . 'Handler']),
+                ]
+            )
+        );
+    }
 }

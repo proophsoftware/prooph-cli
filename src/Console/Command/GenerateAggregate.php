@@ -11,7 +11,9 @@ namespace Prooph\Cli\Console\Command;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Prooph\Cli\Code\Generator\Aggregate as AggregateGenerator;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateAggregate extends AbstractCommand
 {
@@ -32,11 +34,11 @@ class GenerateAggregate extends AbstractCommand
     }
 
     /**
-     * @inheritDoc
+     * @interitdoc
      */
-    protected function getGenerator()
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-        return $this->generator;
+        $this->generateClass($input, $output, $this->generator);
     }
 
     protected function configure()
@@ -52,7 +54,7 @@ class GenerateAggregate extends AbstractCommand
             ->addArgument(
                 'path',
                 InputArgument::OPTIONAL,
-                'Path to store the file',
+                'Path to store the file. Starts from configured source folder path.',
                 'Aggregate'
             )
             ->addArgument(

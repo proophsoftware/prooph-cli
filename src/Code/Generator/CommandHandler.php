@@ -9,9 +9,77 @@
 
 namespace Prooph\Cli\Code\Generator;
 
+use Zend\Code\Generator\DocBlock\Tag\ParamTag;
+use Zend\Code\Generator\DocBlockGenerator;
+use Zend\Code\Generator\MethodGenerator;
+use Zend\Code\Generator\ParameterGenerator;
+
 /**
- *
+ * Generates the command handler for a command
  */
-class CommandHandler
+class CommandHandler extends AbstractGenerator
 {
+    /**
+     * Namespace imports
+     *
+     * @var array
+     */
+    private $uses = [];
+
+    /**
+     * @interitdoc
+     */
+    protected function getClassDocBlock($name)
+    {
+        return new DocBlockGenerator('Command handler for command ' . $name);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getUses()
+    {
+        return $this->uses;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getMethods($name)
+    {
+        return [
+            $this->getInvoke($name),
+        ];
+    }
+
+    /**
+     * Build __invoke method
+     *
+     * @param string $name
+     * @return MethodGenerator
+     */
+    private function getInvoke($name)
+    {
+        $name = ucfirst($name);
+
+        $parameters = [
+            new ParameterGenerator(
+                'command', $name
+            ),
+        ];
+
+        return new MethodGenerator(
+            '__invoke',
+            $parameters,
+            MethodGenerator::FLAG_PUBLIC,
+            '',
+            new DocBlockGenerator(
+                'Handle command',
+                null,
+                [
+                    new ParamTag('command', [$name, ]),
+                ]
+            )
+        );
+    }
 }

@@ -9,7 +9,7 @@
 
 namespace Prooph\Cli\Console\Command;
 
-use Prooph\Cli\Code\Generator\AbstractGenerator;
+use Prooph\Cli\Code\Generator\Generator;
 use Prooph\Cli\Console\Helper\ClassInfo;
 use Prooph\Cli\Exception\RuntimeException;
 use Symfony\Component\Console\Command\Command;
@@ -19,15 +19,7 @@ use Zend\Code\Generator\ClassGenerator;
 
 abstract class AbstractCommand extends Command
 {
-    /**
-     * @return AbstractGenerator
-     */
-    abstract protected function getGenerator();
-
-    /**
-     * @interitdoc
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function generateClass(InputInterface $input, OutputInterface $output, Generator $generator)
     {
         $name = $input->getArgument('name');
         $path = $input->getArgument('path');
@@ -36,7 +28,19 @@ abstract class AbstractCommand extends Command
         /* @var $classInfo ClassInfo */
         $classInfo = $this->getHelper(ClassInfo::class);
 
-        $filename = $classInfo->getFilename($path, $name);
+        switch (get_class($generator)) {
+            case 'Prooph\Cli\Code\Generator\CommandHandler':
+                $className = $name . 'Handler';
+                break;
+            case 'Prooph\Cli\Code\Generator\CommandHandlerFactory':
+                $className = $name . 'HandlerFactory';
+                break;
+            default:
+                $className = $name;
+                break;
+        }
+
+        $filename = $classInfo->getFilename($path, $className);
 
         if (file_exists($filename) && !$input->getOption('force')) {
             throw new RuntimeException(
@@ -44,15 +48,15 @@ abstract class AbstractCommand extends Command
             );
         }
 
-        $fileGenerator = $this->getGenerator()->__invoke(
-            $name, $classInfo->getClassNamespace($path, $name), $classToExtend, $classInfo->getFileDocBlock()
+        $fileGenerator = $generator(
+            $name, $classInfo->getClassNamespace($path), $classToExtend, $classInfo->getFileDocBlock()
         );
 
         if ($input->getOption('not-final')) {
             $fileGenerator->getClass()->removeFlag(ClassGenerator::FLAG_FINAL);
         }
 
-        $this->getGenerator()->writeClass($filename, $fileGenerator);
+        $generator->writeClass($filename, $fileGenerator);
         $output->writeln('Generated file ' . $filename);
     }
 }

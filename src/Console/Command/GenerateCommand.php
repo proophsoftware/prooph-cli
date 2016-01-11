@@ -12,12 +12,12 @@ namespace Prooph\Cli\Console\Command;
 use Prooph\Cli\Code\Generator\Command as CommandGenerator;
 use Prooph\Cli\Code\Generator\CommandHandler as CommandHandlerGenerator;
 use Prooph\Cli\Code\Generator\CommandHandlerFactory as CommandHandlerFactoryGenerator;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateCommand extends Command
+class GenerateCommand extends AbstractCommand
 {
     /**
      * @var CommandGenerator
@@ -52,6 +52,9 @@ class GenerateCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * @interitdoc
+     */
     protected function configure()
     {
         $this
@@ -65,13 +68,40 @@ class GenerateCommand extends Command
             ->addArgument(
                 'path',
                 InputArgument::OPTIONAL,
-                'The path where to save the classes. Starts from configured source folder path.'
+                'Path to store the file. Starts from configured source folder path.',
+                'Command'
+            )
+            ->addArgument(
+                'class-to-extend',
+                InputArgument::OPTIONAL,
+                'FCQN of the base class , optional',
+                '\Prooph\EventSourcing\AggregateRoot'
+            )
+            ->addOption(
+                'force',
+                'f',
+                InputOption::VALUE_NONE,
+                'Overwrite file if exists, optional'
+            )
+            ->addOption(
+                'not-final',
+                null,
+                InputOption::VALUE_NONE,
+                'Mark class as NOT final, optional'
             )
         ;
     }
 
+    /**
+     * @interitdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $input->getArgument('name');
+        $this->generateClass($input, $output, $this->commandGenerator);
+
+        $input->setArgument('class-to-extend', '');
+
+        $this->generateClass($input, $output, $this->commandHandlerGenerator);
+        $this->generateClass($input, $output, $this->commandHandlerFactoryGenerator);
     }
 }

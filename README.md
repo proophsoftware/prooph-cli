@@ -19,6 +19,9 @@ Available commands:
   prooph:event      Generates an event class
 ```
 
+There are available environment variables (see `bin/prooph-cli`) for bash scripts to configure 
+`\Prooph\Cli\Console\Helper\Psr4Info` for your class meta data.
+
 ## Installation
 
 You can install prooph/prooph-cli via composer by adding `"proophsoftware/prooph-cli": "^0.1"` as requirement to your composer.json.
