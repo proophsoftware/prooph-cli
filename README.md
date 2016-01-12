@@ -13,10 +13,10 @@ Available commands:
   help              Displays help for a command
   list              Lists commands
  prooph
-  prooph:aggregate  Generates an aggregate class
-  prooph:all        Generates an aggregate, command, command handler, command handler factory and event class.
-  prooph:command    Generates a command, command handler and command handler factory class
-  prooph:event      Generates an event class
+  prooph:generate:aggregate  Generates an aggregate class
+  prooph:generate:all        Generates an aggregate, command, command handler, command handler factory and event class.
+  prooph:generate:command    Generates a command, command handler and command handler factory class
+  prooph:generate:event      Generates an event class
 ```
 
 There are available environment variables (see `bin/prooph-cli`) for bash scripts to configure 

@@ -24,7 +24,7 @@ class GenerateAll extends Command
     protected function configure()
     {
         $this
-            ->setName('prooph:all')
+            ->setName('prooph:generate:all')
             ->setDescription(
                 'Generates an aggregate, command, command handler, command handler factory and event class.'
             )
@@ -69,7 +69,7 @@ class GenerateAll extends Command
         ];
 
         foreach ($commands as $commandName => $name) {
-            $command = $this->getApplication()->find('prooph:' . $commandName);
+            $command = $this->getApplication()->find('prooph:generate:' . $commandName);
 
             $arguments = [
                 'name'    => $name,

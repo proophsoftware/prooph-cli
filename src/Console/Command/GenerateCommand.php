@@ -58,7 +58,7 @@ class GenerateCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('prooph:command')
+            ->setName('prooph:generate:command')
             ->setDescription('Generates a command, command handler and command handler factory class')
             ->addArgument(
                 'name',

@@ -44,7 +44,7 @@ class GenerateAggregate extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('prooph:aggregate')
+            ->setName('prooph:generate:aggregate')
             ->setDescription('Generates an aggregate class')
             ->addArgument(
                 'name',

@@ -47,7 +47,7 @@ class GenerateEvent extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('prooph:event')
+            ->setName('prooph:generate:event')
             ->setDescription('Generates an event class')
             ->addArgument(
                 'name',
