@@ -48,7 +48,7 @@ class CommandHandler extends AbstractGenerator
     protected function getMethods($name)
     {
         return [
-            $this->getInvoke($name),
+            $this->methodInvoke($name),
         ];
     }
 
@@ -58,7 +58,7 @@ class CommandHandler extends AbstractGenerator
      * @param string $name
      * @return MethodGenerator
      */
-    private function getInvoke($name)
+    private function methodInvoke($name)
     {
         $name = ucfirst($name);
 

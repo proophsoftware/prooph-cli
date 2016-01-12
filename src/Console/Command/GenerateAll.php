@@ -9,6 +9,7 @@
 
 namespace Prooph\Cli\Console\Command;
 
+use Prooph\Cli\Console\Helper\ClassInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -42,17 +43,29 @@ class GenerateAll extends Command
                 'aggregate-name',
                 InputArgument::REQUIRED,
                 'What is the name of the aggregate class?'
-            )->addOption(
+            )
+            ->addArgument(
+                'path',
+                InputArgument::OPTIONAL,
+                'Path to store the files. Starts from configured source folder path.'
+            )
+            ->addOption(
                 'force',
                 'f',
                 InputOption::VALUE_NONE,
-                'Overwrite file if exists, optional'
+                'Overwrite all files if exists, optional'
             )
             ->addOption(
                 'not-final',
                 null,
                 InputOption::VALUE_NONE,
                 'Mark class as NOT final, optional'
+            )
+            ->addOption(
+                'disable-type-prefix',
+                null,
+                InputOption::VALUE_NONE,
+                'Use this flag if you not want to put the classes under the specific type namespace, optional'
             )
         ;
     }
@@ -63,19 +76,41 @@ class GenerateAll extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $commands = [
-            'event' =>  $input->getArgument('event-name'),
             'aggregate' => $input->getArgument('aggregate-name'),
             'command' =>  $input->getArgument('command-name'),
+            'event' =>  $input->getArgument('event-name'),
         ];
+
+//        if ($path = rtrim($input->getArgument('path'), '/')) {
+//            $path .= '/';
+//        }
+        $path = $input->getArgument('path');
+
+        $aggregatePath = '';
 
         foreach ($commands as $commandName => $name) {
             $command = $this->getApplication()->find('prooph:generate:' . $commandName);
+//            $commandPath = $path . $command->getDefinition()->getArgument('path')->getDefault();
 
             $arguments = [
                 'name'    => $name,
+                'path' => $path,
                 '--force' => $input->getOption('force'),
                 '--not-final' => $input->getOption('not-final'),
+                '--disable-type-prefix' => $input->getOption('disable-type-prefix'),
             ];
+
+            if ($commandName === 'aggregate' && !$input->getOption('disable-type-prefix')) {
+                $aggregatePath = rtrim($path, '/') . '/Aggregate';
+            }
+
+            if ($commandName === 'event') {
+                /* @var $classInfo ClassInfo */
+                $classInfo = $this->getHelper(ClassInfo::class);
+
+                $arguments['--update-aggregate'] = $classInfo->getClassNamespace($aggregatePath) . '\\'
+                    . $commands['aggregate'];
+            }
 
             $command->run(new ArrayInput($arguments), $output);
         }

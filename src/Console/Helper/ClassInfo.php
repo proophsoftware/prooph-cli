@@ -44,6 +44,14 @@ interface ClassInfo extends HelperInterface
     public function getClassNamespace($path);
 
     /**
+     * Path is extracted from class name by using package prefix and source folder
+     *
+     * @param string $fcqn
+     * @return string
+     */
+    public function getPath($fcqn);
+
+    /**
      * @inheritDoc
      */
     public function getFilename($path, $name);

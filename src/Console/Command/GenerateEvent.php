@@ -9,6 +9,10 @@
 
 namespace Prooph\Cli\Console\Command;
 
+use Prooph\Cli\Code\Generator\AddEventToAggregate;
+use Prooph\Cli\Console\Helper\ClassInfo;
+use Prooph\Cli\Exception\FileExistsException;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Prooph\Cli\Code\Generator\Event as EventGenerator;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,7 +42,41 @@ class GenerateEvent extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$input->getOption('disable-type-prefix')) {
+            $input->setArgument('path', $input->getArgument('path') . '/Event');
+        }
+
         $this->generateClass($input, $output, $this->generator);
+
+        if ($aggregateClass = $input->getOption('update-aggregate')) {
+            $this->createAggregateClass($aggregateClass, $output);
+
+            $this->updateExistingClass($aggregateClass, $input, $output, new AddEventToAggregate());
+        }
+    }
+
+    /**
+     * @param string $aggregateClass FCQN
+     * @param OutputInterface $output
+     */
+    protected function createAggregateClass($aggregateClass, OutputInterface $output)
+    {
+        try {
+            $command = $this->getApplication()->find('prooph:generate:aggregate');
+
+            /* @var $classInfo ClassInfo */
+            $classInfo = $this->getHelper(ClassInfo::class);
+
+            $arguments = [
+                'name' => substr($aggregateClass, strrpos($aggregateClass, '\\') + 1),
+                'path' => $classInfo->getPath($aggregateClass),
+                '--disable-type-prefix' => true,
+            ];
+
+            $command->run(new ArrayInput($arguments), $output);
+        } catch (FileExistsException $e) {
+            $output->writeln(sprintf('Skip generation of aggregate class "%s". Already exists.', $aggregateClass));
+        }
     }
 
     /**
@@ -57,8 +95,7 @@ class GenerateEvent extends AbstractCommand
             ->addArgument(
                 'path',
                 InputArgument::OPTIONAL,
-                'Path to store the file. Starts from configured source folder path.',
-                'Event'
+                'Path to store the file. Starts from configured source folder path.'
             )
             ->addArgument(
                 'class-to-extend',
@@ -78,6 +115,17 @@ class GenerateEvent extends AbstractCommand
                 InputOption::VALUE_NONE,
                 'Mark class as NOT final, optional'
             )
-        ;
+            ->addOption(
+                'update-aggregate',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'FCQN of an aggregate to add event method, optional'
+            )
+            ->addOption(
+                'disable-type-prefix',
+                null,
+                InputOption::VALUE_NONE,
+                'Use this flag if you not want to put the classes under the "Event" namespace, optional'
+            );
     }
 }

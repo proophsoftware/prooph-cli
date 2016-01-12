@@ -25,6 +25,8 @@ abstract class AbstractGenerator implements Generator
         $properties = $this->getClassProperties();
         $flags = $this->getClassFlags();
         $methods = $this->getMethods($name);
+        $traits = $this->getTraits();
+        // getUses() must called at the end to allow other methods to add import namespaces directives
         $uses = $this->getUses();
 
         $fileDocBlock = new DocBlockGenerator($fileDocBlock);
@@ -57,7 +59,7 @@ abstract class AbstractGenerator implements Generator
             $this->getClassDocBlock($name)
         );
 
-        foreach ($this->getTraits() as $trait) {
+        foreach ($traits as $trait) {
             $class->addTrait($trait);
         }
 

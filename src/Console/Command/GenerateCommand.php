@@ -68,14 +68,13 @@ class GenerateCommand extends AbstractCommand
             ->addArgument(
                 'path',
                 InputArgument::OPTIONAL,
-                'Path to store the file. Starts from configured source folder path.',
-                'Command'
+                'Path to store the file. Starts from configured source folder path.'
             )
             ->addArgument(
                 'class-to-extend',
                 InputArgument::OPTIONAL,
                 'FCQN of the base class , optional',
-                '\Prooph\EventSourcing\AggregateRoot'
+                '\Prooph\Common\Messaging\Command'
             )
             ->addOption(
                 'force',
@@ -89,6 +88,12 @@ class GenerateCommand extends AbstractCommand
                 InputOption::VALUE_NONE,
                 'Mark class as NOT final, optional'
             )
+            ->addOption(
+                'disable-type-prefix',
+                null,
+                InputOption::VALUE_NONE,
+                'Use this flag if you not want to put the classes under the "Command" namespace, optional'
+            )
         ;
     }
 
@@ -97,6 +102,10 @@ class GenerateCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$input->getOption('disable-type-prefix')) {
+            $input->setArgument('path', $input->getArgument('path') . '/Command');
+        }
+
         $this->generateClass($input, $output, $this->commandGenerator);
 
         $input->setArgument('class-to-extend', '');

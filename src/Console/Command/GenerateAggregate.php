@@ -38,6 +38,10 @@ class GenerateAggregate extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$input->getOption('disable-type-prefix')) {
+            $input->setArgument('path', $input->getArgument('path') . '/Aggregate');
+        }
+
         $this->generateClass($input, $output, $this->generator);
     }
 
@@ -54,8 +58,7 @@ class GenerateAggregate extends AbstractCommand
             ->addArgument(
                 'path',
                 InputArgument::OPTIONAL,
-                'Path to store the file. Starts from configured source folder path.',
-                'Aggregate'
+                'Path to store the file. Starts from configured source folder path.'
             )
             ->addArgument(
                 'class-to-extend',
@@ -74,6 +77,12 @@ class GenerateAggregate extends AbstractCommand
                 null,
                 InputOption::VALUE_NONE,
                 'Mark class as NOT final, optional'
+            )
+            ->addOption(
+                'disable-type-prefix',
+                null,
+                InputOption::VALUE_NONE,
+                'Use this flag if you not want to put the classes under the "Aggregate" namespace, optional'
             )
         ;
     }

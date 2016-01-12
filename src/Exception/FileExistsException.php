@@ -7,15 +7,8 @@
  * @license   https://github.com/proophsoftware/prooph-cli/blob/master/LICENSE.md New BSD License
  */
 
-namespace Prooph\Cli;
+namespace Prooph\Cli\Exception;
 
-/**
- * Class Version
- */
-class Version
+class FileExistsException extends RuntimeException
 {
-    public function __invoke()
-    {
-        return '0.1.0';
-    }
 }

@@ -39,7 +39,14 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
      *
      * @var FilterChain
      */
-    protected $inputFilter;
+    protected $filterDirectoryToNamespace;
+
+    /**
+     * Input filter chain
+     *
+     * @var FilterChain
+     */
+    protected $filterNamespaceToDirectory;
 
     /**
      * Configure PSR-4 meta info
@@ -48,10 +55,10 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
      * @param string $packagePrefix Package prefix which is used as class namespace
      * @param string $fileDocBlock Common PHP file doc block
      */
-    public function __construct($sourceFolder, $packagePrefix = '\\', $fileDocBlock = '')
+    public function __construct($sourceFolder, $packagePrefix = '', $fileDocBlock = '')
     {
-        $this->sourceFolder = $sourceFolder;
-        $this->packagePrefix = $packagePrefix;
+        $this->sourceFolder = rtrim($sourceFolder, '/');
+        $this->packagePrefix = trim($packagePrefix, '\\');
         $this->fileDocBlock = $fileDocBlock;
     }
 
@@ -76,13 +83,24 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
      */
     public function getClassNamespace($path)
     {
-        $namespace = $this->getInputFilter()->filter($path);
+        $namespace = $this->filterDirectoryToNamespace()->filter($path);
 
-        if ($packagePrefix = trim($this->getPackagePrefix(), '\\')) {
+        if ($packagePrefix = $this->getPackagePrefix()) {
             $namespace = $packagePrefix . '\\' . $namespace;
         }
 
-        return $namespace;
+        return rtrim($namespace, '\\');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPath($fcqn)
+    {
+        $fcqn = ltrim($fcqn, '\\');
+        $namespace = str_replace($this->getPackagePrefix(), '', $fcqn);
+        $namespace = ltrim(substr($namespace, 0, strrpos($namespace, '\\')), '\\');
+        return $this->filterNamespaceToDirectory()->filter($namespace);
     }
 
     /**
@@ -90,9 +108,13 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
      */
     public function getFilename($path, $name)
     {
-        return $this->getSourceFolder() . DIRECTORY_SEPARATOR
-            . rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
-            . $name . '.php';
+        $filename = $this->getSourceFolder() . DIRECTORY_SEPARATOR;
+
+        if ($path = rtrim($path, '/')) {
+            $filename .= $path . DIRECTORY_SEPARATOR;
+        }
+
+        return $filename . $name . '.php';
     }
 
     /**
@@ -114,13 +136,26 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     /**
      * @return FilterChain
      */
-    private function getInputFilter()
+    private function filterDirectoryToNamespace()
     {
-        if (null === $this->inputFilter) {
-            $this->inputFilter = new FilterChain();
-            $this->inputFilter->attachByName('wordseparatortocamelcase', ['separator' => DIRECTORY_SEPARATOR]);
-            $this->inputFilter->attachByName('wordcamelcasetoseparator', ['separator' => '\\\\']);
+        if (null === $this->filterDirectoryToNamespace) {
+            $this->filterDirectoryToNamespace = new FilterChain();
+            $this->filterDirectoryToNamespace->attachByName('wordseparatortocamelcase', ['separator' => DIRECTORY_SEPARATOR]);
+            $this->filterDirectoryToNamespace->attachByName('wordcamelcasetoseparator', ['separator' => '\\\\']);
         }
-        return $this->inputFilter;
+        return $this->filterDirectoryToNamespace;
+    }
+
+    /**
+     * @return FilterChain
+     */
+    private function filterNamespaceToDirectory()
+    {
+        if (null === $this->filterNamespaceToDirectory) {
+            $this->filterNamespaceToDirectory = new FilterChain();
+            $this->filterNamespaceToDirectory->attachByName('wordseparatortocamelcase', ['separator' => '\\']);
+            $this->filterNamespaceToDirectory->attachByName('wordcamelcasetoseparator', ['separator' => '/']);
+        }
+        return $this->filterNamespaceToDirectory;
     }
 }
