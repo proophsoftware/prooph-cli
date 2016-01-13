@@ -8,25 +8,52 @@
  * @license   https://github.com/proophsoftware/prooph-cli/blob/master/LICENSE.md New BSD License
  */
 
-/**
- * This makes our life easier when dealing with paths. Everything is relative to the application root now.
- */
-chdir(dirname(__DIR__));
-
-if (!file_exists('vendor/autoload.php')) {
-    throw new \RuntimeException(
-        'Unable to load application. Run `php composer.phar install`'
+if (version_compare('5.5.0', PHP_VERSION, '>')) {
+    fwrite(
+        STDERR,
+        'This version of prooph-cli requires PHP 5.5; using the latest version of PHP is highly recommended.' . PHP_EOL
     );
+
+    die(1);
 }
 
-// Setup autoloading
-require 'vendor/autoload.php';
+if (!ini_get('date.timezone')) {
+    ini_set('date.timezone', 'UTC');
+}
+
+foreach (
+    array(
+        __DIR__ . '/../../autoload.php',
+        __DIR__ . '/../vendor/autoload.php',
+        __DIR__ . '/vendor/autoload.php'
+    ) as $file
+) {
+    if (file_exists($file)) {
+        define('PROOPHCLI_COMPOSER_INSTALL', $file);
+
+        break;
+    }
+}
+
+unset($file);
+
+if (!defined('PROOPHCLI_COMPOSER_INSTALL')) {
+    fwrite(STDERR,
+        'You need to set up the project dependencies using the following commands:' . PHP_EOL .
+        'wget http://getcomposer.org/composer.phar' . PHP_EOL .
+        'php composer.phar install' . PHP_EOL
+    );
+
+    die(1);
+}
+
+require PROOPHCLI_COMPOSER_INSTALL;
 
 use Symfony\Component\Console\Application;
 use \Prooph\Cli\Console\Command;
 
 /* @var $container \Zend\ServiceManager\ServiceManager */
-$container = require 'config/services.php';
+$container = require dirname(__DIR__) . '/config/services.php';
 
 $cli = new Application('Prooph Command Line Interface');
 
