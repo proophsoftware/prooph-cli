@@ -110,7 +110,7 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     {
         $filename = $this->getSourceFolder() . DIRECTORY_SEPARATOR;
 
-        if ($path = rtrim($path, '/')) {
+        if ($path = trim($path, '/')) {
             $filename .= $path . DIRECTORY_SEPARATOR;
         }
 
@@ -140,8 +140,12 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     {
         if (null === $this->filterDirectoryToNamespace) {
             $this->filterDirectoryToNamespace = new FilterChain();
-            $this->filterDirectoryToNamespace->attachByName('wordseparatortocamelcase', ['separator' => DIRECTORY_SEPARATOR]);
-            $this->filterDirectoryToNamespace->attachByName('wordcamelcasetoseparator', ['separator' => '\\\\']);
+            $this->filterDirectoryToNamespace->attachByName(
+                'wordseparatortocamelcase', ['separator' => DIRECTORY_SEPARATOR]
+            );
+            $this->filterDirectoryToNamespace->attachByName(
+                'wordcamelcasetoseparator', ['separator' => '\\\\']
+            );
         }
         return $this->filterDirectoryToNamespace;
     }
@@ -153,8 +157,12 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     {
         if (null === $this->filterNamespaceToDirectory) {
             $this->filterNamespaceToDirectory = new FilterChain();
-            $this->filterNamespaceToDirectory->attachByName('wordseparatortocamelcase', ['separator' => '\\']);
-            $this->filterNamespaceToDirectory->attachByName('wordcamelcasetoseparator', ['separator' => '/']);
+            $this->filterNamespaceToDirectory->attachByName(
+                'wordseparatortocamelcase', ['separator' => '\\']
+            );
+            $this->filterNamespaceToDirectory->attachByName(
+                'wordcamelcasetoseparator', ['separator' => DIRECTORY_SEPARATOR]
+            );
         }
         return $this->filterNamespaceToDirectory;
     }

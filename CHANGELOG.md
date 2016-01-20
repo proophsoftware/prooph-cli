@@ -19,3 +19,4 @@ All notable changes to this project will be documented in this file, in reverse 
 ### Fixed
 
 * Fixed include paths
+* Fixed directory separator for class path
