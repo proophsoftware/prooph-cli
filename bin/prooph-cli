@@ -23,6 +23,7 @@ if (!ini_get('date.timezone')) {
 
 foreach (
     array(
+        __DIR__ . '/../../../autoload.php',
         __DIR__ . '/../../autoload.php',
         __DIR__ . '/../vendor/autoload.php',
         __DIR__ . '/vendor/autoload.php'
@@ -76,8 +77,3 @@ $application->add($container->get(Command\GenerateEvent::class));
 $application->add($container->get(Command\GenerateAggregate::class));
 
 $application->run();
-
-
-
-
-

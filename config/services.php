@@ -10,4 +10,4 @@
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\ServiceManager;
 
-return new ServiceManager(new Config(require 'config/dependencies.php'));
+return new ServiceManager(new Config(require __DIR__ . '/dependencies.php'));
