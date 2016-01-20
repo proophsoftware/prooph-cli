@@ -1,7 +1,7 @@
 # prooph Command Line Interface
 
 ## Overview
-The prooph command line interfaces generates classes to increase development speed. For available commands run
+The prooph command line interface generates classes to increase development speed. For available commands run
 
 ```bash
 $ php bin/prooph-cli list

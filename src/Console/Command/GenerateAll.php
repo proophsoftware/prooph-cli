@@ -81,16 +81,12 @@ class GenerateAll extends Command
             'event' =>  $input->getArgument('event-name'),
         ];
 
-//        if ($path = rtrim($input->getArgument('path'), '/')) {
-//            $path .= '/';
-//        }
         $path = $input->getArgument('path');
 
         $aggregatePath = '';
 
         foreach ($commands as $commandName => $name) {
             $command = $this->getApplication()->find('prooph:generate:' . $commandName);
-//            $commandPath = $path . $command->getDefinition()->getArgument('path')->getDefault();
 
             $arguments = [
                 'name'    => $name,
