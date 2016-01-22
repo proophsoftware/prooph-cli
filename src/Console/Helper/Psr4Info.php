@@ -85,11 +85,7 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     {
         $namespace = $this->filterDirectoryToNamespace()->filter($path);
 
-        if ($packagePrefix = $this->getPackagePrefix()) {
-            $namespace = $packagePrefix . '\\' . $namespace;
-        }
-
-        return rtrim($namespace, '\\');
+        return $this->normalizeNamespace($this->getPackagePrefix() . '\\' . $namespace);
     }
 
     /**
@@ -97,7 +93,7 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
      */
     public function getPath($fcqn)
     {
-        $fcqn = ltrim($fcqn, '\\');
+        $fcqn = $this->normalizeNamespace($fcqn);
         $namespace = str_replace($this->getPackagePrefix(), '', $fcqn);
         $namespace = ltrim(substr($namespace, 0, strrpos($namespace, '\\')), '\\');
         return $this->filterNamespaceToDirectory()->filter($namespace);
@@ -108,13 +104,13 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
      */
     public function getFilename($path, $name)
     {
-        $filename = $this->getSourceFolder() . DIRECTORY_SEPARATOR;
+        $filePath = $this->getSourceFolder() . DIRECTORY_SEPARATOR;
 
         if ($path = trim($path, '/')) {
-            $filename .= $path . DIRECTORY_SEPARATOR;
+            $filePath .= $this->normalizePath($path) . DIRECTORY_SEPARATOR;
         }
 
-        return $filename . $name . '.php';
+        return $filePath . ucfirst($name) . '.php';
     }
 
     /**
@@ -134,6 +130,37 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     }
 
     /**
+     * Removes duplicates of backslashes and trims backslashes
+     *
+     * @param string $namespace
+     * @return string
+     */
+    private function normalizeNamespace($namespace)
+    {
+        $namespace = str_replace('\\\\', '\\', $namespace);
+        $namespace = explode('\\', $namespace);
+
+        array_walk($namespace, function (&$item) { $item = ucfirst($item); });
+
+        return trim(implode('\\', $namespace), '\\');
+    }
+
+    /**
+     * PSR-4 folders must be upper camel case
+     *
+     * @param string $path
+     * @return string
+     */
+    private function normalizePath($path)
+    {
+        $path = explode('/', $path);
+
+        array_walk($path, function (&$item) { $item = ucfirst($item); });
+
+        return implode('/', $path);
+    }
+
+    /**
      * @return FilterChain
      */
     private function filterDirectoryToNamespace()
@@ -141,10 +168,10 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
         if (null === $this->filterDirectoryToNamespace) {
             $this->filterDirectoryToNamespace = new FilterChain();
             $this->filterDirectoryToNamespace->attachByName(
-                'wordseparatortocamelcase', ['separator' => DIRECTORY_SEPARATOR]
+                'wordseparatortoseparator', ['search_separator' => DIRECTORY_SEPARATOR, 'replacement_separator' => '|']
             );
             $this->filterDirectoryToNamespace->attachByName(
-                'wordcamelcasetoseparator', ['separator' => '\\\\']
+                'wordseparatortoseparator', ['search_separator' => '|', 'replacement_separator' => '\\\\']
             );
         }
         return $this->filterDirectoryToNamespace;
@@ -158,10 +185,10 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
         if (null === $this->filterNamespaceToDirectory) {
             $this->filterNamespaceToDirectory = new FilterChain();
             $this->filterNamespaceToDirectory->attachByName(
-                'wordseparatortocamelcase', ['separator' => '\\']
+                'wordseparatortoseparator', ['search_separator' => '\\', 'replacement_separator' => '|']
             );
             $this->filterNamespaceToDirectory->attachByName(
-                'wordcamelcasetoseparator', ['separator' => DIRECTORY_SEPARATOR]
+                'wordseparatortoseparator', ['search_separator' => '|', 'replacement_separator' => DIRECTORY_SEPARATOR]
             );
         }
         return $this->filterNamespaceToDirectory;
