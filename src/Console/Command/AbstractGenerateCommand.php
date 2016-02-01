@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Zend\Code\Generator\ClassGenerator;
 use Zend\Code\Generator\FileGenerator;
 
-abstract class AbstractCommand extends Command
+abstract class AbstractGenerateCommand extends Command
 {
     protected function generateClass(InputInterface $input, OutputInterface $output, Generator $generator)
     {

@@ -9,6 +9,7 @@
 
 
 use Zend\ServiceManager\Factory\InvokableFactory;
+use \Prooph\Cli\Console\Container;
 
 return [
     'services' => [
@@ -21,9 +22,9 @@ return [
         \Prooph\Cli\Code\Generator\CommandHandlerFactory::class => InvokableFactory::class,
         \Prooph\Cli\Code\Generator\Event::class => InvokableFactory::class,
         \Prooph\Cli\Console\Command\GenerateAll::class => InvokableFactory::class,
-        \Prooph\Cli\Console\Command\GenerateAggregate::class
-            => '\Prooph\Cli\Console\Container\GenerateAggregateFactory',
-        \Prooph\Cli\Console\Command\GenerateCommand::class => '\Prooph\Cli\Console\Container\GenerateCommandFactory',
-        \Prooph\Cli\Console\Command\GenerateEvent::class => '\Prooph\Cli\Console\Container\GenerateEventFactory',
+        \Prooph\Cli\Console\Command\GenerateAggregate::class => Container\GenerateAggregateFactory::class,
+        \Prooph\Cli\Console\Command\GenerateCommand::class => Container\GenerateCommandFactory::class,
+        \Prooph\Cli\Console\Command\GenerateEvent::class =>  Container\GenerateEventFactory::class,
+        'doctrine.connection.default' => Container\DoctrineDbalConnectionFactory::class
     ],
 ];

@@ -63,17 +63,37 @@ $helperSet = new \Symfony\Component\Console\Helper\HelperSet();
 $application = new Application();
 
 // environment variables can be used to configure the class info, useful for Docker or bash scripts
-$application->getHelperSet()->set(
+$helperSet = $application->getHelperSet();
+
+$helperSet->set(
     new \Prooph\Cli\Console\Helper\Psr4Info(
         getenv('PROOPHCLI_SOURCE_FOLDER') ?: getcwd() . DIRECTORY_SEPARATOR . 'src',
         getenv('PROOPHCLI_PACKAGE_PREFIX') ?: '',
         getenv('PROOPHCLI_FILE_DOC_BLOCk') ?: ''
     )
 );
+$helperSet->set(
+    new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper(
+        $container->get('doctrine.connection.default')
+    ),
+    'connection'
+);
 
-$application->add($container->get(Command\GenerateCommand::class));
-$application->add($container->get(Command\GenerateAll::class));
-$application->add($container->get(Command\GenerateEvent::class));
-$application->add($container->get(Command\GenerateAggregate::class));
+$application->addCommands(
+    [
+        // Generate Commands
+        $container->get(Command\GenerateCommand::class),
+        $container->get(Command\GenerateAll::class),
+        $container->get(Command\GenerateEvent::class),
+        $container->get(Command\GenerateAggregate::class),
+        // Migrations Commands
+        new \Doctrine\DBAL\Migrations\Tools\Console\Command\DiffCommand(),
+        new \Doctrine\DBAL\Migrations\Tools\Console\Command\ExecuteCommand(),
+        new \Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand(),
+        new \Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand(),
+        new \Doctrine\DBAL\Migrations\Tools\Console\Command\StatusCommand(),
+        new \Doctrine\DBAL\Migrations\Tools\Console\Command\VersionCommand()
+    ]
+);
 
 $application->run();

@@ -10,4 +10,8 @@
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\ServiceManager;
 
+// check for v3.0
+if (method_exists('\Zend\ServiceManager\ServiceManager', 'configure')) {
+    return new ServiceManager(require __DIR__ . '/dependencies.php');
+}
 return new ServiceManager(new Config(require __DIR__ . '/dependencies.php'));
