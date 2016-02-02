@@ -15,24 +15,7 @@ use Zend\Stdlib\Glob;
  * then ``local.php`` and finally ``*.local.php``. This way local settings overwrite global settings.
  */
 
-$config = [
-    'doctrine' => [
-        'connection' => [
-            'default' => [
-                'driverClass' => getenv('DOCTRINE_DBAL_DRIVER') ?: 'Doctrine\DBAL\Driver\PDOMySql\Driver',
-                'host' => getenv('DB_HOST') ?: 'localhost',
-                'port' => '3306',
-                'user' => getenv('DB_USERNAME') ?: 'root',
-                'password' => getenv('DB_PASSWORD') ?: '',
-                'dbname' => getenv('DB_DATABASE') ?: 'prooph',
-                'charset' => 'utf8',
-                'driverOptions' => [
-                    1002 => "SET NAMES 'UTF8'"
-                ],
-            ],
-        ],
-    ],
-];
+$config = [];
 
 // Load configuration from autoload path
 foreach (Glob::glob('config/autoload/{{,*.}global,{,*.}local}.php', Glob::GLOB_BRACE) as $file) {

@@ -9,22 +9,25 @@
 
 
 use Zend\ServiceManager\Factory\InvokableFactory;
-use \Prooph\Cli\Console\Container;
+use Prooph\Cli\Console\Container;
+use Prooph\Cli\Code\Generator;
+use Prooph\Cli\Console\Command;
 
 return [
     'services' => [
         'config' => require __DIR__ . '/config.php',
     ],
     'factories' => [
-        \Prooph\Cli\Code\Generator\Aggregate::class => InvokableFactory::class,
-        \Prooph\Cli\Code\Generator\Command::class => InvokableFactory::class,
-        \Prooph\Cli\Code\Generator\CommandHandler::class => InvokableFactory::class,
-        \Prooph\Cli\Code\Generator\CommandHandlerFactory::class => InvokableFactory::class,
-        \Prooph\Cli\Code\Generator\Event::class => InvokableFactory::class,
-        \Prooph\Cli\Console\Command\GenerateAll::class => InvokableFactory::class,
-        \Prooph\Cli\Console\Command\GenerateAggregate::class => Container\GenerateAggregateFactory::class,
-        \Prooph\Cli\Console\Command\GenerateCommand::class => Container\GenerateCommandFactory::class,
-        \Prooph\Cli\Console\Command\GenerateEvent::class =>  Container\GenerateEventFactory::class,
-        'doctrine.connection.default' => Container\DoctrineDbalConnectionFactory::class
+        // generators
+        Generator\Aggregate::class => InvokableFactory::class,
+        Generator\Command::class => InvokableFactory::class,
+        Generator\CommandHandler::class => InvokableFactory::class,
+        Generator\CommandHandlerFactory::class => InvokableFactory::class,
+        Generator\Event::class => InvokableFactory::class,
+        // commands
+        Command\GenerateAggregate::class => Container\GenerateAggregateFactory::class,
+        Command\GenerateAll::class => InvokableFactory::class,
+        Command\GenerateCommand::class => Container\GenerateCommandFactory::class,
+        Command\GenerateEvent::class =>  Container\GenerateEventFactory::class,
     ],
 ];

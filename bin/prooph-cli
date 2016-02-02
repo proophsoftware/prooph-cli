@@ -72,12 +72,6 @@ $helperSet->set(
         getenv('PROOPHCLI_FILE_DOC_BLOCk') ?: ''
     )
 );
-$helperSet->set(
-    new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper(
-        $container->get('doctrine.connection.default')
-    ),
-    'connection'
-);
 
 $application->addCommands(
     [
@@ -86,13 +80,6 @@ $application->addCommands(
         $container->get(Command\GenerateAll::class),
         $container->get(Command\GenerateEvent::class),
         $container->get(Command\GenerateAggregate::class),
-        // Migrations Commands
-        new \Doctrine\DBAL\Migrations\Tools\Console\Command\DiffCommand(),
-        new \Doctrine\DBAL\Migrations\Tools\Console\Command\ExecuteCommand(),
-        new \Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand(),
-        new \Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand(),
-        new \Doctrine\DBAL\Migrations\Tools\Console\Command\StatusCommand(),
-        new \Doctrine\DBAL\Migrations\Tools\Console\Command\VersionCommand()
     ]
 );
 
