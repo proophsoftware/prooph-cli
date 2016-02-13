@@ -29,7 +29,7 @@ class Aggregate extends AbstractGenerator
     /**
      * @inheritDoc
      */
-    protected function getMethods($name)
+    protected function getMethods($name, $namespace)
     {
         return [
             $this->methodAggregateId(),

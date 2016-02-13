@@ -24,7 +24,7 @@ abstract class AbstractGenerator implements Generator
         $interfaces = $this->getImplementedInterfaces();
         $properties = $this->getClassProperties();
         $flags = $this->getClassFlags();
-        $methods = $this->getMethods($name);
+        $methods = $this->getMethods($name, $namespace);
         $traits = $this->getTraits();
         // getUses() must called at the end to allow other methods to add import namespaces directives
         $uses = $this->getUses();
@@ -100,9 +100,10 @@ abstract class AbstractGenerator implements Generator
 
     /**
      * @param string $name
+     * @param string $namespace
      * @return array List of class methods
      */
-    protected function getMethods($name)
+    protected function getMethods($name, $namespace)
     {
         return [];
     }

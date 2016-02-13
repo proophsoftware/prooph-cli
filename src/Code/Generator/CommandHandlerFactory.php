@@ -46,10 +46,10 @@ class CommandHandlerFactory extends AbstractGenerator
     /**
      * @inheritDoc
      */
-    protected function getMethods($name)
+    protected function getMethods($name, $namespace)
     {
         return [
-            $this->methodInvoke($name),
+            $this->methodInvoke($name, $namespace),
         ];
     }
 
@@ -57,14 +57,15 @@ class CommandHandlerFactory extends AbstractGenerator
      * Build __invoke method
      *
      * @param string $name
+     * @param string $namespace
      * @return MethodGenerator
      */
-    private function methodInvoke($name)
+    private function methodInvoke($name, $namespace)
     {
         $name = ucfirst($name);
 
         $parameters = [
-            new ParameterGenerator('container', 'ContainerInterface'),
+            new ParameterGenerator('container', '\Interop\Container\ContainerInterface'),
         ];
         $this->uses[] = 'Interop\Container\ContainerInterface';
 
@@ -80,7 +81,7 @@ class CommandHandlerFactory extends AbstractGenerator
                     new ParamTag(
                         'container',
                         [
-                            'ContainerInterface',
+                            '\Interop\Container\ContainerInterface',
                         ]
                     ),
                     new ReturnTag([$name . 'Handler']),

@@ -22,14 +22,14 @@ class GenerateEventFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return $this($serviceLocator);
+        return $this($serviceLocator, '');
     }
 
     /**
-     * @param ContainerInterface $container
+     * @inheritdoc
      * @return GenerateEvent
      */
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return new GenerateEvent(
             $container->get(EventGenerator::class)

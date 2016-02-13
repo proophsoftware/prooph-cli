@@ -45,10 +45,10 @@ class CommandHandler extends AbstractGenerator
     /**
      * @inheritDoc
      */
-    protected function getMethods($name)
+    protected function getMethods($name, $namespace)
     {
         return [
-            $this->methodInvoke($name),
+            $this->methodInvoke($name, $namespace),
         ];
     }
 
@@ -56,15 +56,17 @@ class CommandHandler extends AbstractGenerator
      * Build __invoke method
      *
      * @param string $name
+     * @param $namespace
      * @return MethodGenerator
      */
-    private function methodInvoke($name)
+    private function methodInvoke($name, $namespace)
     {
         $name = ucfirst($name);
+        $namespace = '\\' . $namespace . '\\';
 
         $parameters = [
             new ParameterGenerator(
-                'command', $name
+                'command', $namespace . $name
             ),
         ];
 
@@ -77,7 +79,7 @@ class CommandHandler extends AbstractGenerator
                 'Handle command',
                 null,
                 [
-                    new ParamTag('command', [$name, ]),
+                    new ParamTag('command', [ $namespace . $name]),
                 ]
             )
         );
