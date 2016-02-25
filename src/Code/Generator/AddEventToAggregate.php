@@ -33,7 +33,8 @@ class AddEventToAggregate implements ReflectionGenerator
         $fileGenerator = FileGenerator::fromReflectedFileName($reflectionClass->getFileName());
         $fileGenerator->setFilename($reflectionClass->getFileName());
 
-        $fileGenerator->setUse(ltrim($namespace, '\\') . '\\' . $commandName);
+        $namespace = ltrim($namespace, '\\') . '\\';
+        $fileGenerator->setUse($namespace . $commandName);
 
         $classGenerator = $fileGenerator->getClass();
 
@@ -42,7 +43,7 @@ class AddEventToAggregate implements ReflectionGenerator
             $classGenerator->setExtendedClass(substr($classToExtend, strrpos($classToExtend, '\\') + 1));
         }
 
-        $classGenerator->addMethodFromGenerator($this->methodWhenEvent($commandName));
+        $classGenerator->addMethodFromGenerator($this->methodWhenEvent($commandName, $namespace));
 
         return $fileGenerator;
     }
@@ -61,11 +62,11 @@ class AddEventToAggregate implements ReflectionGenerator
      * @param string $name
      * @return MethodGenerator
      */
-    private function methodWhenEvent($name)
+    private function methodWhenEvent($name, $namespace)
     {
         $parameters = [
             new ParameterGenerator(
-                'event', $name
+                'event', '\\' . $namespace . $name
             ),
         ];
 
@@ -78,7 +79,7 @@ class AddEventToAggregate implements ReflectionGenerator
                 'Updates aggregate if event was occurred',
                 null,
                 [
-                    new ParamTag('event', [$name, ]),
+                    new ParamTag('event', [ '\\' . $namespace . $name]),
                 ]
             )
         );

@@ -10,6 +10,9 @@
 namespace Prooph\Cli\Console\Container;
 
 use Interop\Container\ContainerInterface;
+use Prooph\Cli\Code\Generator\Command;
+use Prooph\Cli\Code\Generator\CommandHandler;
+use Prooph\Cli\Code\Generator\CommandHandlerFactory;
 use Prooph\Cli\Console\Command\GenerateCommand;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -21,19 +24,19 @@ class GenerateCommandFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return $this($serviceLocator);
+        return $this($serviceLocator, '');
     }
 
     /**
-     * @param ContainerInterface $container
+     * @inheritdoc
      * @return GenerateCommand
      */
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return new GenerateCommand(
-            $container->get(\Prooph\Cli\Code\Generator\Command::class),
-            $container->get(\Prooph\Cli\Code\Generator\CommandHandler::class),
-            $container->get(\Prooph\Cli\Code\Generator\CommandHandlerFactory::class)
+            $container->get(Command::class),
+            $container->get(CommandHandler::class),
+            $container->get(CommandHandlerFactory::class)
         );
     }
 }
