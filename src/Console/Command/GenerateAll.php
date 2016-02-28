@@ -67,7 +67,24 @@ class GenerateAll extends Command
                 InputOption::VALUE_NONE,
                 'Use this flag if you not want to put the classes under the specific type namespace, optional'
             )
-        ;
+            ->addOption(
+                'source-folder',
+                null,
+                InputArgument::OPTIONAL,
+                'Absolute path to the source folder.'
+            )
+            ->addOption(
+                'package-prefix',
+                null,
+                InputArgument::OPTIONAL,
+                'Package prefix which is used as class namespace.'
+            )
+            ->addOption(
+                'file-doc-block',
+                null,
+                InputArgument::OPTIONAL,
+                'Common PHP file doc block.'
+            );
     }
 
     /**
@@ -94,6 +111,7 @@ class GenerateAll extends Command
                 '--force' => $input->getOption('force'),
                 '--not-final' => $input->getOption('not-final'),
                 '--disable-type-prefix' => $input->getOption('disable-type-prefix'),
+                //'--package-prefix' => $input->getOption('package-prefix'),
             ];
 
             if ($commandName === 'aggregate' && !$input->getOption('disable-type-prefix')) {
@@ -107,6 +125,12 @@ class GenerateAll extends Command
                 $arguments['--update-aggregate'] = $classInfo->getClassNamespace($aggregatePath) . '\\'
                     . $commands['aggregate'];
             }
+
+            /* @var $classInfo ClassInfo */
+            $classInfo = $this->getHelper(ClassInfo::class);
+            $classInfo->setSourceFolder($input->getOption('source-folder'));
+            $classInfo->setPackagePrefix($input->getOption('package-prefix'));
+            $classInfo->setFileDocBlock($input->getOption('file-doc-block'));
 
             $command->run(new ArrayInput($arguments), $output);
         }

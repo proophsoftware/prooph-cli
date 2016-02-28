@@ -126,6 +126,24 @@ class GenerateEvent extends AbstractGenerateCommand
                 null,
                 InputOption::VALUE_NONE,
                 'Use this flag if you not want to put the classes under the "Event" namespace, optional'
+            )
+            ->addOption(
+                'source-folder',
+                null,
+                InputArgument::OPTIONAL,
+                'Absolute path to the source folder.'
+            )
+            ->addOption(
+                'package-prefix',
+                null,
+                InputArgument::OPTIONAL,
+                'Package prefix which is used as class namespace.'
+            )
+            ->addOption(
+                'file-doc-block',
+                null,
+                InputArgument::OPTIONAL,
+                'Common PHP file doc block.'
             );
     }
 }
