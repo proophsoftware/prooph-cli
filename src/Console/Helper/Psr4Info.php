@@ -10,6 +10,7 @@
 namespace Prooph\Cli\Console\Helper;
 
 use Zend\Filter\FilterChain;
+use Zend\Filter\Word\SeparatorToSeparator;
 
 final class Psr4Info extends AbstractClassInfo implements ClassInfo
 {
@@ -167,12 +168,8 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     {
         if (null === $this->filterDirectoryToNamespace) {
             $this->filterDirectoryToNamespace = new FilterChain();
-            $this->filterDirectoryToNamespace->attachByName(
-                'wordseparatortoseparator', ['search_separator' => DIRECTORY_SEPARATOR, 'replacement_separator' => '|']
-            );
-            $this->filterDirectoryToNamespace->attachByName(
-                'wordseparatortoseparator', ['search_separator' => '|', 'replacement_separator' => '\\\\']
-            );
+            $this->filterDirectoryToNamespace->attach(new SeparatorToSeparator(DIRECTORY_SEPARATOR, '|'));
+            $this->filterDirectoryToNamespace->attach(new SeparatorToSeparator('|', '\\\\'));
         }
         return $this->filterDirectoryToNamespace;
     }
@@ -184,12 +181,8 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     {
         if (null === $this->filterNamespaceToDirectory) {
             $this->filterNamespaceToDirectory = new FilterChain();
-            $this->filterNamespaceToDirectory->attachByName(
-                'wordseparatortoseparator', ['search_separator' => '\\', 'replacement_separator' => '|']
-            );
-            $this->filterNamespaceToDirectory->attachByName(
-                'wordseparatortoseparator', ['search_separator' => '|', 'replacement_separator' => DIRECTORY_SEPARATOR]
-            );
+            $this->filterNamespaceToDirectory->attach(new SeparatorToSeparator('\\', '|'));
+            $this->filterNamespaceToDirectory->attach(new SeparatorToSeparator('|', DIRECTORY_SEPARATOR));
         }
         return $this->filterNamespaceToDirectory;
     }
