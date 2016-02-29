@@ -111,23 +111,19 @@ class GenerateAll extends Command
                 '--force' => $input->getOption('force'),
                 '--not-final' => $input->getOption('not-final'),
                 '--disable-type-prefix' => $input->getOption('disable-type-prefix'),
-                //'--package-prefix' => $input->getOption('package-prefix'),
             ];
 
             if ($commandName === 'aggregate' && !$input->getOption('disable-type-prefix')) {
                 $aggregatePath = rtrim($path, '/') . '/Aggregate';
             }
 
-            if ($commandName === 'event') {
-                /* @var $classInfo ClassInfo */
-                $classInfo = $this->getHelper(ClassInfo::class);
+            /* @var $classInfo ClassInfo */
+            $classInfo = $this->getHelper(ClassInfo::class);
 
+            if ($commandName === 'event') {
                 $arguments['--update-aggregate'] = $classInfo->getClassNamespace($aggregatePath) . '\\'
                     . $commands['aggregate'];
             }
-
-            /* @var $classInfo ClassInfo */
-            $classInfo = $this->getHelper(ClassInfo::class);
 
             if ($input->getOption('source-folder')) {
                 $classInfo->setSourceFolder($input->getOption('source-folder'));
