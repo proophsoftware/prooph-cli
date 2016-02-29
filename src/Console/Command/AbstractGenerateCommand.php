@@ -29,9 +29,16 @@ abstract class AbstractGenerateCommand extends Command
 
         /* @var $classInfo ClassInfo */
         $classInfo = $this->getHelper(ClassInfo::class);
-        $classInfo->setSourceFolder($input->getOption('source-folder'));
-        $classInfo->setPackagePrefix($input->getOption('package-prefix'));
-        $classInfo->setFileDocBlock($input->getOption('file-doc-block'));
+
+        if ($input->getOption('source-folder')) {
+            $classInfo->setSourceFolder($input->getOption('source-folder'));
+        }
+        if ($input->getOption('package-prefix')) {
+            $classInfo->setPackagePrefix($input->getOption('package-prefix'));
+        }
+        if ($input->getOption('file-doc-block')) {
+            $classInfo->setFileDocBlock($input->getOption('file-doc-block'));
+        }
 
         switch (get_class($generator)) {
             case 'Prooph\Cli\Code\Generator\CommandHandler':
