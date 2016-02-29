@@ -70,19 +70,19 @@ class GenerateAll extends Command
             ->addOption(
                 'source-folder',
                 null,
-                InputArgument::OPTIONAL,
+                InputOption::VALUE_OPTIONAL,
                 'Absolute path to the source folder.'
             )
             ->addOption(
                 'package-prefix',
                 null,
-                InputArgument::OPTIONAL,
+                InputOption::VALUE_OPTIONAL,
                 'Package prefix which is used as class namespace.'
             )
             ->addOption(
                 'file-doc-block',
                 null,
-                InputArgument::OPTIONAL,
+                InputOption::VALUE_OPTIONAL,
                 'Common PHP file doc block.'
             );
     }
