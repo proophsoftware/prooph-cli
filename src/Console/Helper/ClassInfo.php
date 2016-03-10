@@ -27,11 +27,25 @@ interface ClassInfo extends HelperInterface
     public function getPackagePrefix();
 
     /**
+     * PSR-4 namespace prefix
+     *
+     * @param string
+     */
+    public function setPackagePrefix($packagePrefix);
+
+    /**
      * PSR-4 source folder
      *
      * @return string
      */
     public function getSourceFolder();
+
+    /**
+     * PSR-4 source folder
+     *
+     * @param string
+     */
+    public function setSourceFolder($sourceFolder);
 
     /**
      * Class namespace is determined by package prefix, source folder and given path.
@@ -62,4 +76,11 @@ interface ClassInfo extends HelperInterface
      * @return string
      */
     public function getFileDocBlock();
+
+    /**
+     * PHPDoc file doc block for copyright, license ...
+     *
+     * @param string $fileDocBlock
+     */
+    public function setFileDocBlock($fileDocBlock);
 }

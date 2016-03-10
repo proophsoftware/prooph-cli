@@ -82,6 +82,14 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     /**
      * @inheritDoc
      */
+    public function setPackagePrefix($packagePrefix)
+    {
+        $this->packagePrefix = $packagePrefix;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getClassNamespace($path)
     {
         $namespace = $this->filterDirectoryToNamespace()->filter($path);
@@ -125,9 +133,25 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     /**
      * @inheritDoc
      */
+    public function setSourceFolder($sourceFolder)
+    {
+        $this->sourceFolder = $sourceFolder;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getFileDocBlock()
     {
         return $this->fileDocBlock;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setFileDocBlock($fileDocBlock)
+    {
+        $this->fileDocBlock = $fileDocBlock;
     }
 
     /**
