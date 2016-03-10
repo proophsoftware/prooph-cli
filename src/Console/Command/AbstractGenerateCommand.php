@@ -84,7 +84,7 @@ abstract class AbstractGenerateCommand extends Command
         // don't break code generation, this is only a benefit
         if (!class_exists($fcqn)) {
             $output->writeln(
-                sprintf('<comment>Event method was not added to the aggregate. Class "%s" not found.</comment>', $fcqn)
+                sprintf('<comment>Event method was not added to the aggregate. Class "%s" not found. Please check your autoloader.</comment>', $fcqn)
             );
             return;
         }
