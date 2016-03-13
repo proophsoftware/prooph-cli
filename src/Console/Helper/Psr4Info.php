@@ -100,10 +100,19 @@ final class Psr4Info extends AbstractClassInfo implements ClassInfo
     /**
      * @inheritDoc
      */
-    public function getPath($fcqn)
+    public function getClassName($fqcn)
     {
-        $fcqn = $this->normalizeNamespace($fcqn);
-        $namespace = str_replace($this->getPackagePrefix(), '', $fcqn);
+        $fqcn = $this->normalizeNamespace($fqcn);
+        return trim(substr($fqcn, strrpos($fqcn, '\\')), '\\');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPath($fqcn)
+    {
+        $fqcn = $this->normalizeNamespace($fqcn);
+        $namespace = str_replace($this->getPackagePrefix(), '', $fqcn);
         $namespace = ltrim(substr($namespace, 0, strrpos($namespace, '\\')), '\\');
         return $this->filterNamespaceToDirectory()->filter($namespace);
     }

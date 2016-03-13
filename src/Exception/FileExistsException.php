@@ -11,4 +11,28 @@ namespace Prooph\Cli\Exception;
 
 class FileExistsException extends RuntimeException
 {
+    /**
+     * Command type
+     *
+     * @var string
+     */
+    private $type;
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     * @return $this
+     */
+    public function withType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
 }

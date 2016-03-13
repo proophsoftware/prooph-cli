@@ -49,18 +49,20 @@ class GenerateEvent extends AbstractGenerateCommand
         $this->generateClass($input, $output, $this->generator);
 
         if ($aggregateClass = $input->getOption('update-aggregate')) {
-            $this->createAggregateClass($aggregateClass, $output);
+            $this->createAggregateClass($aggregateClass, $input, $output);
 
             $this->updateExistingClass($aggregateClass, $input, $output, new AddEventToAggregate());
         }
     }
 
     /**
-     * @param string $aggregateClass FCQN
+     * @param string $aggregateClass FQCN
      * @param OutputInterface $output
      */
-    protected function createAggregateClass($aggregateClass, OutputInterface $output)
+    protected function createAggregateClass($aggregateClass, InputInterface $input, OutputInterface $output)
     {
+        $filename = '';
+
         try {
             $command = $this->getApplication()->find('prooph:generate:aggregate');
 
@@ -68,14 +70,16 @@ class GenerateEvent extends AbstractGenerateCommand
             $classInfo = $this->getHelper(ClassInfo::class);
 
             $arguments = [
-                'name' => substr($aggregateClass, strrpos($aggregateClass, '\\') + 1),
+                'name' => $classInfo->getClassName($aggregateClass),
                 'path' => $classInfo->getPath($aggregateClass),
                 '--disable-type-prefix' => true,
             ];
 
+            $filename = $classInfo->getFilename($arguments['path'], $arguments['name']);
+
             $command->run(new ArrayInput($arguments), $output);
         } catch (FileExistsException $e) {
-            $output->writeln(sprintf('Skip generation of aggregate class "%s". Already exists.', $aggregateClass));
+            $output->writeln(sprintf('Skip generation of aggregate class "%s". File already exists.', $filename));
         }
     }
 
@@ -100,7 +104,7 @@ class GenerateEvent extends AbstractGenerateCommand
             ->addArgument(
                 'class-to-extend',
                 InputArgument::OPTIONAL,
-                'FCQN of the base class , optional',
+                'FQCN of the base class , optional',
                 '\Prooph\EventSourcing\AggregateChanged'
             )
             ->addOption(
@@ -119,7 +123,7 @@ class GenerateEvent extends AbstractGenerateCommand
                 'update-aggregate',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'FCQN of an aggregate to add event method, optional'
+                'FQCN of an aggregate to add event method, optional'
             )
             ->addOption(
                 'disable-type-prefix',

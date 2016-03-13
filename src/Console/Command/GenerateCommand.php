@@ -73,7 +73,7 @@ class GenerateCommand extends AbstractGenerateCommand
             ->addArgument(
                 'class-to-extend',
                 InputArgument::OPTIONAL,
-                'FCQN of the base class , optional',
+                'FQCN of the base class , optional',
                 '\Prooph\Common\Messaging\Command'
             )
             ->addOption(

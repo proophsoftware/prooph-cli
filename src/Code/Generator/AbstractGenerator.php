@@ -16,6 +16,8 @@ use Zend\Code\Generator\ClassGenerator;
 
 abstract class AbstractGenerator implements Generator
 {
+    use ReplaceNamespaceTrait;
+
     /**
      * @interitdoc
      */
@@ -26,7 +28,7 @@ abstract class AbstractGenerator implements Generator
         $flags = $this->getClassFlags();
         $methods = $this->getMethods($name, $namespace);
         $traits = $this->getTraits();
-        // getUses() must called at the end to allow other methods to add import namespaces directives
+        // getUses() must called at the end to allow other methods to add import namespace directives
         $uses = $this->getUses();
 
         $fileDocBlock = new DocBlockGenerator($fileDocBlock);
@@ -67,7 +69,7 @@ abstract class AbstractGenerator implements Generator
             'classes' => [$class],
             'namespace' => $namespace,
             'uses' => $uses,
-            'docBlock' => $fileDocBlock
+            'docBlock' => $fileDocBlock,
         ]);
     }
 
@@ -81,7 +83,8 @@ abstract class AbstractGenerator implements Generator
         if (!@mkdir($dir, 0755, true) && !is_dir($dir)) {
             throw new RuntimeException(sprintf('Could not create "%s" directory.', $dir));
         }
-        file_put_contents($filename, $fileGenerator->generate());
+
+        file_put_contents($filename, $this->replaceNamespace($fileGenerator));
     }
 
     /**

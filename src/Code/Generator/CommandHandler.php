@@ -62,6 +62,9 @@ class CommandHandler extends AbstractGenerator
     private function methodInvoke($name, $namespace)
     {
         $name = ucfirst($name);
+
+        $this->uses[] = $namespace . '\\' . $name;
+
         $namespace = '\\' . $namespace . '\\';
 
         $parameters = [

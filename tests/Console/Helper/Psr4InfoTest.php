@@ -172,4 +172,45 @@ class Psr4InfoTest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @test
+     * @dataProvider providerForGetClassName
+     * @covers       Prooph\Cli\Console\Helper\Psr4Info::getClassName
+     */
+    public function it_returns_class_name($expected, $sourceFolder, $packagePrefix, $fqcn)
+    {
+        $psr4Info = new Psr4Info($sourceFolder, $packagePrefix);
+
+        self::assertSame($expected, $psr4Info->getClassName($fqcn));
+    }
+
+    /**
+     * Values are expected, sourceFolder, packagePrefix and FQCN
+     *
+     * @return array
+     */
+    public function providerForGetClassName()
+    {
+        return [
+            [
+                'User',
+                'src',
+                '\MyVendor\MyPackage\\',
+                '\MyVendor\MyPackage\ModelPath\UserPath\User',
+            ],
+            [
+                'User',
+                'src',
+                '\\MyVendor\\MyPackage\\',
+                '\\MyVendor\\MyPackage\\ModelPath\\UserPath\\User',
+            ],
+            [
+                'User',
+                'src',
+                '',
+                'MyVendor\MyPackage\User',
+            ],
+        ];
+    }
 }
