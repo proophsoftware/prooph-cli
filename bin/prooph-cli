@@ -108,6 +108,8 @@ $helperSet = $application->getHelperSet();
 
 $helperSet->set($classInfo);
 
+spl_autoload_register(new \Prooph\Cli\Autoloader($classInfo));
+
 $aggregate = new Generator\Aggregate();
 $command = new Generator\Command();
 $commandHandler = new Generator\CommandHandler();

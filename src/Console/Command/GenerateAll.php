@@ -10,6 +10,7 @@
 namespace Prooph\Cli\Console\Command;
 
 use Prooph\Cli\Console\Helper\ClassInfo;
+use Prooph\Cli\Exception\FileExistsException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -100,8 +101,6 @@ class GenerateAll extends Command
 
         $path = $input->getArgument('path');
 
-        $aggregatePath = '';
-
         foreach ($commands as $commandName => $name) {
             $command = $this->getApplication()->find('prooph:generate:' . $commandName);
 
@@ -113,8 +112,10 @@ class GenerateAll extends Command
                 '--disable-type-prefix' => $input->getOption('disable-type-prefix'),
             ];
 
-            if ($commandName === 'aggregate' && !$input->getOption('disable-type-prefix')) {
-                $aggregatePath = rtrim($path, '/') . '/Aggregate';
+            $aggregatePath = rtrim($path, '/');
+
+            if (in_array($commandName, ['aggregate', 'event']) && !$input->getOption('disable-type-prefix')) {
+                $aggregatePath .= DIRECTORY_SEPARATOR . 'Aggregate';
             }
 
             /* @var $classInfo ClassInfo */
@@ -135,7 +136,14 @@ class GenerateAll extends Command
                 $classInfo->setFileDocBlock($input->getOption('file-doc-block'));
             }
 
-            $command->run(new ArrayInput($arguments), $output);
+            try {
+                $command->run(new ArrayInput($arguments), $output);
+            } catch (FileExistsException $e) {
+                // aggregate class will be updated with event
+                if ($e->getType() !== GenerateAggregate::class) {
+                    throw $e;
+                }
+            }
         }
     }
 }

@@ -55,9 +55,9 @@ abstract class AbstractGenerateCommand extends Command
         $filename = $classInfo->getFilename($path, $className);
 
         if (file_exists($filename) && !$input->getOption('force')) {
-            throw new FileExistsException(
+            throw (new FileExistsException(
                 sprintf('File "%s" already exists, use --force option to overwrite this file.', $filename)
-            );
+            ))->withType(static::class);
         }
         /* @var $fileGenerator FileGenerator */
         $fileGenerator = $generator(
@@ -73,28 +73,34 @@ abstract class AbstractGenerateCommand extends Command
     }
 
     /**
-     * @param string $fcqn
+     * @param string $fqcn
      * @param InputInterface $input
      * @param OutputInterface $output
      * @param ReflectionGenerator $generator
      */
     protected function updateExistingClass(
-        $fcqn, InputInterface $input, OutputInterface $output, ReflectionGenerator $generator
+        $fqcn, InputInterface $input, OutputInterface $output, ReflectionGenerator $generator
     ) {
+        /* @var $classInfo ClassInfo */
+        $classInfo = $this->getHelper(ClassInfo::class);
+
+        $file = $classInfo->getFilename(
+            $classInfo->getPath($fqcn),
+            $classInfo->getClassName($fqcn)
+        );
+
         // don't break code generation, this is only a benefit
-        if (!class_exists($fcqn)) {
+        if (!file_exists($file)) {
             $output->writeln(
-                sprintf('<comment>Event method was not added to the aggregate. Class "%s" not found. Please check your autoloader.</comment>', $fcqn)
+                sprintf('<comment>Event method was not added to the aggregate. File "%s" not found.</comment>', $file)
             );
             return;
         }
 
-        /* @var $classInfo ClassInfo */
-        $classInfo = $this->getHelper(ClassInfo::class);
         $path = $input->getArgument('path');
 
         /* @var $fileGenerator FileGenerator */
-        $fileGenerator = $generator($fcqn, $classInfo->getClassNamespace($path), $input->getArgument('name'));
+        $fileGenerator = $generator($file, $classInfo->getClassNamespace($path), $input->getArgument('name'));
 
         $generator->writeClass($fileGenerator);
         $output->writeln('<info>Updated file ' . $fileGenerator->getFilename() . '</info>');

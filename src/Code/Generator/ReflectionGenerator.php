@@ -21,12 +21,12 @@ interface ReflectionGenerator
     /**
      * Updates class
      *
-     * @param string $fcqn
+     * @param string $file
      * @param string $namespace
      * @param string $commandName Event
      * @return FileGenerator
      */
-    public function __invoke($fcqn, $namespace, $commandName);
+    public function __invoke($file, $namespace, $commandName);
 
     /**
      * Writes class to disk. Filename must be set in FileGenerator instance

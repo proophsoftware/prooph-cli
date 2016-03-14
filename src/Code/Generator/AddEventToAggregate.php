@@ -14,29 +14,44 @@ use Zend\Code\Generator\DocBlockGenerator;
 use Zend\Code\Generator\FileGenerator;
 use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Generator\ParameterGenerator;
-use Zend\Code\Reflection\ClassReflection;
+use Zend\Code\Reflection\FileReflection;
 
 /**
  * Adds the event method to the aggregate to update aggregate data
  */
 class AddEventToAggregate implements ReflectionGenerator
 {
+    use ReplaceNamespaceTrait;
+
     /**
      * @inheritDoc
      */
-    public function __invoke($fcqn, $namespace, $commandName)
+    public function __invoke($file, $namespace, $commandName)
     {
         $commandName = ucfirst($commandName);
 
-        $reflectionClass = new ClassReflection($fcqn);
+        require $file;
 
-        $fileGenerator = FileGenerator::fromReflectedFileName($reflectionClass->getFileName());
-        $fileGenerator->setFilename($reflectionClass->getFileName());
+        $reflectionClass = new FileReflection($file);
+        $fileGenerator = FileGenerator::fromReflection($reflectionClass);
+        $fileGenerator->setFilename($file);
+
+        $classGenerator = $fileGenerator->getClass();
+
+        /* @var $method MethodGenerator */
+        foreach ($classGenerator->getMethods() as $method) {
+            if (strpos($method->getName(), 'when') !== 0) {
+                continue;
+            }
+            /* @var $parameter ParameterGenerator */
+            foreach ($method->getParameters() as $parameter) {
+                $fileGenerator->setUse($parameter->getType());
+            }
+        }
 
         $namespace = ltrim($namespace, '\\') . '\\';
         $fileGenerator->setUse($namespace . $commandName);
 
-        $classGenerator = $fileGenerator->getClass();
 
         // workaround for import namespace
         if ($classToExtend = $classGenerator->getExtendedClass()) {
@@ -53,7 +68,7 @@ class AddEventToAggregate implements ReflectionGenerator
      */
     public function writeClass(FileGenerator $fileGenerator)
     {
-        file_put_contents($fileGenerator->getFilename(), $fileGenerator->generate());
+        file_put_contents($fileGenerator->getFilename(), $this->replaceNamespace($fileGenerator));
     }
 
     /**
@@ -76,7 +91,7 @@ class AddEventToAggregate implements ReflectionGenerator
             MethodGenerator::FLAG_PROTECTED,
             '',
             new DocBlockGenerator(
-                'Updates aggregate if event was occurred',
+                'Updates aggregate if event ' . $name . ' was occurred',
                 null,
                 [
                     new ParamTag('event', [ '\\' . $namespace . $name]),
